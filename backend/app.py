@@ -1,10 +1,11 @@
+from os import getenv
 from flask import Flask, request, make_response
 import requests
 import pymongo
 from bson import ObjectId
 from icalendar import Calendar, Event
 # Replace the uri string with your MongoDB deployment's connection string.
-conn_str = "mongodb://root:devpassword@localhost:27017/"
+conn_str = getenv("MONGODB_CONN", "mongodb://root:devpassword@localhost:27017/")
 # set a 5-second connection timeout
 client = pymongo.MongoClient(conn_str, serverSelectionTimeoutMS=5000)
 try:
@@ -29,13 +30,13 @@ def calendar(id):
         web_ical_data = requests.get(calendar_options['url'])
 
         cal = Calendar()
-        web_ical:Calendar = cal.from_ical(web_ical_data.text)
+        web_ical: Calendar = cal.from_ical(web_ical_data.text)
         transformed_ical = Calendar()
         for evt in web_ical.subcomponents:
-            is_good=True
+            is_good = True
             for word in block_words:
                 if word in str(evt['SUMMARY']):
-                    is_good=False
+                    is_good = False
                     break
             if is_good:
                 transformed_ical.add_component(evt)
