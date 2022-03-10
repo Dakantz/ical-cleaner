@@ -1,0 +1,5 @@
+flask
+icalendar
+pymongo
+pymongo[srv]
+requests
