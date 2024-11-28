@@ -6,12 +6,14 @@ from bson import ObjectId
 from icalendar import Calendar, Event
 # Replace the uri string with your MongoDB deployment's connection string.
 conn_str = getenv("MONGODB_CONN", "mongodb://root:devpassword@localhost:27017/")
+
 # set a 5-second connection timeout
 client = pymongo.MongoClient(conn_str, serverSelectionTimeoutMS=5000)
 try:
     print(client.server_info())
 except Exception:
-    print("Unable to connect to the server.")
+    
+    print("Unable to connect to the server.",conn_str)
     exit(-1)
 
 mdb = client.get_database("ical-wrapper")
