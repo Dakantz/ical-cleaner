@@ -1,0 +1,30 @@
+version: "3.4"
+services:
+  api:
+    restart: unless-stopped
+    build:
+      context: ../backend
+    environment:
+      PORT: 80
+      FLASK_RUN_PORT: 80
+      MONGODB_CONN: mongodb://root:benediktfooder@mongodb.dakantz.at:27017/
+    labels:
+      # Traefik configuration, Hostname needs to be changed
+      - traefik.http.routers.ical-wrapper-http.rule=Host(`ical-wrapper.dakantz.at`)
+      - traefik.http.routers.ical-wrapper-http.entrypoints=http
+      - traefik.http.routers.ical-wrapper-http.middlewares=redirect
+      - traefik.http.routers.ical-wrapper-https.rule=Host(`ical-wrapper.dakantz.at`)
+      - traefik.http.routers.ical-wrapper-https.entrypoints=https
+      - traefik.http.routers.ical-wrapper-https.tls=true
+      - traefik.http.routers.ical-wrapper-https.tls.certresolver=letsencrypt
+      - traefik.http.services.ical-wrapper.loadbalancer.server.port=80
+      - traefik.http.middlewares.redirect.redirectscheme.scheme=https
+
+    networks:
+      - web
+      - internal
+networks:
+  web:
+    external: true
+  internal:
+    external: false
